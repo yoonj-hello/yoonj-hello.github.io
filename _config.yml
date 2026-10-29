@@ -7,8 +7,8 @@ baseurl: ""
 # TeXt 테마 원격 로드 설정
 remote_theme: kitian616/jekyll-TeXt-theme
 
-# TeXt 테마 기본 스킨 지정
-site_text:
+# TeXt 테마 올바른 스킨 설정 (site_text가 아니라 theme_text 입니다!)
+theme_text:
   skin: default
 
 # 플러그인 설정
