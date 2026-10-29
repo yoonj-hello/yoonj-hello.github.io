@@ -4,13 +4,10 @@ description: 나의 심플한 블로그 소개글
 url: "https://yoonj-hello.github.io"
 baseurl: ""
 
-# 기존 기본 테마 비우기 (중요!)
-theme: ""
-
 # TeXt 테마 원격 로드 설정
 remote_theme: kitian616/jekyll-TeXt-theme
 
-# TeXt 테마 필수 설정 (스킨 지정)
+# TeXt 테마 기본 스킨 지정
 site_text:
   skin: default
 
