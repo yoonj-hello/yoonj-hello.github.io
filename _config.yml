@@ -1,0 +1,10 @@
+# 블로그 기본 설정
+title: yoonj's Blog
+description: 나의 심플한 블로그 소개글
+url: "https://github.io"
+
+# TeXt 테마 원격 로드 설정
+remote_theme: kitian616/jekyll-TeXt-theme
+
+plugins:
+  - jekyll-remote-theme
