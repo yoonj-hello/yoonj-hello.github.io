@@ -1,16 +1,11 @@
-# GitHub Pages 기본 테마 무효화
-theme: jekyll-theme-primer
-# (또는 theme 줄을 아예 없애고 remote_theme만 남깁니다)
-remote_theme: kitian616/jekyll-TeXt-theme
-
 title: yoonj's Blog
 description: 나의 심플한 블로그 소개글
 url: "https://yoonj-hello.github.io"
 baseurl: ""
 
-# TeXt 테마 스킨 설정
-theme_text:
-  skin: default
+remote_theme: kitian616/jekyll-TeXt-theme
+
+text_skin: default
 
 plugins:
   - jekyll-remote-theme
@@ -18,3 +13,5 @@ plugins:
   - jekyll-sitemap
   - jekyll-feed
   - jemoji
+  - jekyll-seo-tag
+  - jekyll-include-cache
