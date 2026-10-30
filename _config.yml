@@ -5,7 +5,7 @@ baseurl: ""
 
 remote_theme: kitian616/jekyll-TeXt-theme
 
-text_skin: forest
+text_skin: dark
 
 plugins:
   - jekyll-remote-theme
