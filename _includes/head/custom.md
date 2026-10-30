@@ -4,12 +4,6 @@
   .navigation__item--active a:visited {
     color: #2d6a5f !important;
   }
-  
-  .navigation__item--active a,
-  .navigation__item--active a:link,
-  .navigation__item--active a:visited {
-    color: #2d6a5f !important;
-  }
   body ::selection {
     background: rgba(45, 106, 95, 0.4);
   }
