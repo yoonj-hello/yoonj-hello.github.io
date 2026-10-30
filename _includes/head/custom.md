@@ -4,9 +4,7 @@
   .navigation__item--active a:visited {
     color: #2d6a5f !important;
   }
-</style>
-
-<style>
+  
   .navigation__item--active a,
   .navigation__item--active a:link,
   .navigation__item--active a:visited {
