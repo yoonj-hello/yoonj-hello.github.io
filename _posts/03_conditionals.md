@@ -1,0 +1,196 @@
+# [파이썬 기초 3] 조건문 — 상황에 따라 다르게 실행하기
+
+> 파이썬 입문 가이드 시리즈 3/10
+> `if` / `elif` / `else`, 중첩 조건문, 한 줄 조건식, `in` 연산자를 정리합니다.
+
+---
+
+## 1. `if` 문
+
+조건이 `True`일 때만 **들여쓰기된 블록**이 실행됩니다.
+
+```python
+a = 100
+if a >= 100:
+    print("100보다 크거나 같군요.")
+
+a = 50
+if a >= 100:
+    print("100보다 크거나 같군요.")   # 출력되지 않음
+print("끝")                          # 들여쓰기가 없으므로 항상 출력됨
+```
+
+> ⚠️ 파이썬은 **들여쓰기(보통 공백 4칸)** 로 블록을 구분합니다. 조건 끝의 `:`(콜론)도 잊지 마세요.
+
+## 2. `if ~ else`
+
+```python
+a = 200
+if a < 100:
+    print("100보다 작군요.")
+else:
+    print("100보다 크군요")
+print("프로그램 끝")
+```
+
+## 3. `if ~ elif ~ else`
+
+조건이 여러 개일 때 위에서부터 차례로 검사하고, **처음으로 참인 블록 하나만** 실행합니다.
+
+```python
+score = int(input("점수를 입력해주세요\n"))
+if score >= 90:
+    gpa = "A"
+elif score >= 80:
+    gpa = "B"
+elif score >= 70:
+    gpa = "C"
+elif score >= 60:
+    gpa = "D"
+else:
+    gpa = "F"
+print(f"{score}점은 {gpa}학점입니다.")
+```
+
+`elif`는 이미 위 조건이 거짓일 때만 검사되므로, `score >= 80 and score < 90`처럼 상한을 또 쓸 필요가 없습니다.
+
+## 4. 조건식 만들기
+
+### 홀수 / 짝수
+
+```python
+num = int(input("숫자를 입력하세요:"))
+if num % 2 == 1:
+    print("홀수입니다")
+else:
+    print("짝수입니다")
+```
+
+### 논리 연산자로 조건 결합 — 윤년 판별
+
+윤년 조건: **4의 배수이면서 100의 배수가 아니거나, 400의 배수**
+
+```python
+year = int(input("연도를 입력하시오:"))
+if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
+    print(f"{year}년은 윤년입니다.")
+else:
+    print(f"{year}년은 평년입니다.")
+```
+
+### 구간 판별 — BMI 계산
+
+```python
+weight = float(input("몸무게를 kg단위로 입력하시오.\n"))
+height = float(input("키를 m단위로 입력하시오.\n"))
+bmi = weight / (height * height)
+
+if bmi < 18.5:
+    state = "저체중"
+elif bmi <= 22.9:
+    state = "정상"
+elif bmi <= 24.9:
+    state = "위험체중"
+elif bmi <= 29.9:
+    state = "1단계 비만"
+else:
+    state = "2단계 비만"
+
+print("당신의 BMI는 %.1f이고 %s입니다." % (bmi, state))
+```
+
+> 💡 `elif`를 순서대로 쓰면 `bmi > 18.5 and ...` 같은 하한 검사를 생략해 코드가 훨씬 깔끔해집니다.
+> (분류 기준은 예시이며 기관마다 조금씩 다릅니다.)
+
+## 5. 중첩 조건문
+
+`if` 안에 또 `if`를 넣을 수 있습니다.
+
+```python
+id_fix = "ilovepython"
+ps_fix = "1234"
+id_input = input("아이디를 입력하시오: ")
+
+if id_input == id_fix:
+    ps_input = input("비밀번호를 입력하시오: ")
+    if ps_input == ps_fix:
+        print("환영합니다.")
+    else:
+        print("잘못된 비밀번호입니다.")
+else:
+    print("아이디를 찾을 수 없습니다.")
+```
+
+## 6. 한 줄 조건식 (삼항 연산자)
+
+```python
+jumsu = 55
+
+# 일반적인 방법
+if jumsu >= 60:
+    res = "합격"
+else:
+    res = "불합격"
+
+# 한 줄로
+res = "합격" if jumsu >= 60 else "불합격"
+print(res)
+```
+
+형식: `참일 때 값 if 조건 else 거짓일 때 값`
+
+## 7. `in` 연산자 — 포함 여부 확인
+
+리스트, 문자열 등에 값이 들어있는지 검사합니다.
+
+```python
+fruit = ["딸기", "수박", "사과", "포도"]
+if "딸기" in fruit:
+    print("딸기있어요.")
+if "자두" in fruit:
+    print("자두있어요.")      # 출력되지 않음
+if "자두" not in fruit:
+    print("자두는 없어요.")
+```
+
+## 8. 계산기 만들기 (종합 예제)
+
+```python
+num1 = int(input("첫번째 수를 입력해주세요: "))
+num2 = int(input("두번째 수를 입력해주세요: "))
+cal = int(input("연산자를 선택하세요.\n1.더하기 2.빼기 3.곱하기 4.나누기\n"))
+
+if cal == 1:
+    print(f"{num1}+{num2}={num1 + num2}")
+elif cal == 2:
+    print(f"{num1}-{num2}={num1 - num2}")
+elif cal == 3:
+    print(f"{num1}x{num2}={num1 * num2}")
+elif cal == 4:
+    if num2 == 0:
+        print("0으로 나눌 수 없습니다.")   # 0 나누기 오류 방지
+    else:
+        print(f"{num1}/{num2}={num1 / num2}")
+else:
+    print("1~4중에 입력해주세요.")
+```
+
+---
+
+## ✅ 핵심 정리
+
+- `if` / `elif` / `else` 뒤에는 **콜론(:)** 과 **들여쓰기**가 필수입니다.
+- `elif`는 위에서부터 검사해 **첫 번째 참인 블록만** 실행합니다.
+- `and`, `or`, `not`으로 복합 조건을 만들 수 있습니다.
+- 간단한 분기는 `A if 조건 else B` 한 줄로 표현할 수 있습니다.
+- 값의 포함 여부는 `in`, `not in`으로 확인합니다.
+
+## 📝 연습문제
+
+1. 나이를 입력받아 20세 이상이면 "즐거운 시간 보내세요!", 미만이면 "집에 갈 시간이네요!"를 출력해 보세요.
+2. 세 수를 입력받아 가장 큰 수를 출력해 보세요.
+3. 입력받은 문자가 `"yes"` 또는 `"y"`이면 "동의", 아니면 "거절"을 출력해 보세요. (`in` 활용)
+
+---
+
+**시리즈 목차**: 1.변수와 데이터 · 2.연산자 · **3.조건문** · 4.반복문 · 5.리스트 · 6.튜플/셋/딕셔너리 · 7.함수와 모듈 · 8.윈도우 프로그래밍 · 9.파일 입출력 · 10.객체지향

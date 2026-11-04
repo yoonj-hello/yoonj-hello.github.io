@@ -1,0 +1,271 @@
+# [파이썬 기초 8] 윈도우 프로그래밍 — tkinter로 GUI 프로그램 만들기
+
+> 파이썬 입문 가이드 시리즈 8/10
+> 지금까지는 검은 콘솔 화면에서만 실행했다면, 이번에는 **창, 버튼, 글자, 체크박스**가 있는 프로그램을 만들어 봅니다. 파이썬에 기본 내장된 `tkinter` 모듈을 사용합니다.
+
+---
+
+## 1. 기본 구조
+
+```python
+from tkinter import *
+
+win = Tk()                 # 1) 창 만들기
+win.title("제목")           # 창 제목
+win.geometry("400x300")    # 가로x세로 크기 (곱하기는 알파벳 x)
+
+# 2) 여기에 위젯(라벨, 버튼 등)을 만들고 배치
+
+win.mainloop()             # 3) 창을 계속 띄워두고 이벤트 대기 (맨 마지막 줄!)
+```
+
+> `from tkinter import *`는 tkinter의 모든 이름을 가져옵니다. `messagebox`는 따로 가져와야 합니다. (`from tkinter import messagebox`)
+
+## 2. 라벨 (Label) — 글자 표시
+
+```python
+from tkinter import *
+
+win = Tk()
+win.geometry("400x300")
+
+label1 = Label(win, text="열공", font=("궁서체", 30), fg="blue")
+label2 = Label(win, text="합시다.", bg="red", anchor=SE, width=20)
+label3 = Label(win, text="화이팅", font=("궁서체", 30), fg="black")
+
+label1.pack()
+label2.pack()
+label3.pack()
+win.mainloop()
+```
+
+| 옵션 | 설명 |
+|---|---|
+| `text` | 표시할 글자 |
+| `font` | `("글꼴", 크기)` |
+| `fg` | 글자색 (foreground) |
+| `bg` | 배경색 (background) |
+| `width`, `height` | 크기 |
+| `anchor` | 내부 정렬 (`N`, `S`, `E`, `W`, `SE` …) |
+| `image` | 이미지 표시 |
+
+## 3. 위젯 배치하기
+
+위젯은 **만든 뒤에 반드시 배치**해야 화면에 보입니다.
+
+```python
+label1.pack()                  # 위에서 아래로 차곡차곡
+label1.pack(side=LEFT)         # 왼쪽 / RIGHT / TOP / BOTTOM
+```
+
+`pack` 외에도 `grid`(표 형태), `place`(좌표 지정) 방식이 있습니다. 한 창 안에서 한 부모에 `pack`과 `grid`를 섞어 쓰면 안 됩니다.
+
+## 4. 버튼 (Button)과 이벤트
+
+버튼을 눌렀을 때 실행할 **함수를 `command`로 연결**합니다.
+
+> ⚠️ `command=my` 처럼 **괄호 없이** 함수 이름만 적습니다. `command=my()`로 쓰면 버튼을 누르기도 전에 실행됩니다.
+
+### 메시지 박스
+
+```python
+from tkinter import *
+from tkinter import messagebox
+
+def my():
+    messagebox.showinfo("한국공학대", "환영합니다.")
+
+win = Tk()
+win.geometry("400x300")
+button1 = Button(win, text="클릭", command=my)
+button1.pack()
+win.mainloop()
+```
+
+### 이미지 넣기
+
+```python
+photo = PhotoImage(file="C:\\Users\\내이름\\Downloads\\extra.png")
+label1 = Label(win, image=photo)
+button1 = Button(win, image=photo, command=my)
+```
+
+- 경로의 `\`는 `\\`로 두 번 쓰거나, 문자열 앞에 `r`을 붙이거나(`r"C:\...\extra.png"`), `/`를 사용합니다.
+- `PhotoImage`는 **png / gif**만 지원합니다. (jpg는 Pillow 라이브러리 필요)
+- `PhotoImage` 변수를 **함수 안에서만** 만들면 사라져서 이미지가 안 보일 수 있으니 전역으로 두세요.
+
+## 5. 체크버튼 (Checkbutton)
+
+```python
+def my():
+    if chk.get() == 0:
+        messagebox.showinfo("off", "체크버튼이 꺼졌어요.")
+    else:
+        messagebox.showinfo("on", "체크버튼이 켜졌어요")
+
+chk = IntVar()     # 체크 상태를 저장하는 tkinter 전용 변수 (0 또는 1)
+cb1 = Checkbutton(win, text="클릭하세요", variable=chk, command=my)
+cb1.pack()
+```
+
+## 6. 라디오버튼 (Radiobutton)
+
+같은 `variable`을 공유하는 버튼들 중 **하나만** 선택됩니다. 각 버튼은 서로 다른 `value`를 가집니다.
+
+```python
+def my():
+    if var.get() == 1:
+        label1.configure(text="우동")
+    elif var.get() == 2:
+        label1.configure(text="모밀")
+    else:
+        label1.configure(text="만두")
+
+var = IntVar()
+rb1 = Radiobutton(win, text="우동", variable=var, value=1, command=my)
+rb2 = Radiobutton(win, text="모밀", variable=var, value=2, command=my)
+rb3 = Radiobutton(win, text="만두", variable=var, value=3, command=my)
+label1 = Label(win, text="오늘의 메뉴", fg="red")
+
+rb1.pack(); rb2.pack(); rb3.pack(); label1.pack()
+```
+
+## 7. 위젯 내용 바꾸기: `configure()`
+
+생성한 뒤에도 `configure(옵션=값)`으로 속성을 바꿀 수 있습니다.
+
+```python
+label1.configure(text="바뀐 글자")
+label1.configure(fg="red", bg="yellow")
+button1.configure(bg="lime")
+```
+
+---
+
+## 🛠 미니 프로젝트 ①: 로또 번호 뽑기
+
+```python
+import random
+from tkinter import *
+
+lotto = list(range(1, 46))
+
+def pick():
+    nums = sorted(random.sample(lotto, 6))
+    label1.configure(text=" ".join(map(str, nums)))   # 숫자 → 문자열로 바꿔 이어붙임
+
+win = Tk()
+win.title("로또")
+win.geometry("400x150")
+
+button1 = Button(win, text="로또 번호 뽑기", command=pick)
+label1 = Label(win, text="버튼을 눌러보세요", fg="red", font=("맑은 고딕", 16))
+
+button1.pack(pady=10)
+label1.pack()
+win.mainloop()
+```
+
+## 🛠 미니 프로젝트 ②: 음료 자판기
+
+지금까지 배운 **리스트, 함수, `global`, 조건문, 반복문, tkinter**가 모두 들어가는 종합 예제입니다. 이미지 파일 없이도 실행되도록 글자 버튼으로 만들었습니다.
+
+```python
+from tkinter import *
+from tkinter import messagebox
+
+# [이름, 가격, 재고]
+drink = [["물", 800, 2], ["핫식스", 2000, 5], ["옥수수수염차", 1600, 0],
+         ["트레비", 1300, 1], ["펩시제로콜라", 1100, 10]]
+choice = None   # 현재 선택한 음료의 인덱스
+money = 0       # 보유 금액
+
+def refresh():
+    """재고에 따라 버튼 색 갱신: 품절 빨강, 재고 있음 초록"""
+    for i in range(len(drink)):
+        color = "red" if drink[i][2] == 0 else "lime"
+        buttons[i].configure(bg=color)
+    moneystate.configure(text=f"보유 돈: {money}원")
+
+def add_money():
+    global money
+    if money >= 10000:
+        messagebox.showinfo("SYSTEM", "너무 많은 욕심은 도리어 화를 불러옵니다..")
+    else:
+        money += 1000
+    refresh()
+
+def select(i):
+    global choice
+    if drink[i][2] == 0:
+        messagebox.showinfo("SYSTEM", f"현재 {drink[i][0]}(은)는 품절입니다.")
+        return
+    choice = i
+    choicestate.configure(text=f"선택: {drink[i][0]}")
+    pricestate.configure(text=f"가격: {drink[i][1]}원")
+
+def buy():
+    global money
+    if choice is None:
+        messagebox.showinfo("SYSTEM", "현재 선택된 음료가 없습니다.")
+    elif money < drink[choice][1]:
+        messagebox.showinfo("SYSTEM", "돈이 부족합니다.")
+    else:
+        money -= drink[choice][1]
+        drink[choice][2] -= 1
+        messagebox.showinfo("SYSTEM", "구매하였습니다.")
+        refresh()
+
+win = Tk()
+win.title("자판기")
+win.geometry("300x450")
+win.resizable(width=False, height=False)   # 창 크기 고정
+
+buttons = []
+for i in range(len(drink)):
+    # lambda i=i : 반복문의 i 값을 그 순간의 값으로 고정 (아주 중요!)
+    b = Button(win, text=drink[i][0], width=20, command=lambda i=i: select(i))
+    b.pack(pady=2)
+    buttons.append(b)
+
+choicestate = Label(win, text="선택: -")
+pricestate = Label(win, text="가격: -")
+moneystate = Label(win, text="보유 돈: 0원")
+choicestate.pack(pady=(10, 0))
+pricestate.pack()
+Button(win, text="구매", width=10, command=buy).pack(pady=5)
+Button(win, text="돈 넣기 (+1000)", command=add_money).pack()
+moneystate.pack(pady=5)
+
+refresh()
+win.mainloop()
+```
+
+### 이 코드의 포인트
+
+1. **리스트 + 반복문으로 버튼 생성** — 음료가 늘어나도 `drink` 리스트에만 추가하면 됩니다. (버튼을 하나하나 손으로 만들 때보다 훨씬 간결)
+2. **`global`** — 함수 안에서 `money`, `choice` 값을 바꾸기 위해 필요합니다.
+3. **`lambda i=i:`** — 반복문 안에서 `command=lambda: select(i)`라고만 쓰면 모든 버튼이 마지막 `i` 값을 쓰게 됩니다. `i=i`로 현재 값을 고정해야 합니다.
+4. **`refresh()` 함수로 화면 갱신 통일** — 상태가 바뀔 때마다 한 곳에서 화면을 갱신합니다.
+
+> 💡 이미지를 쓰고 싶다면 `PhotoImage(file=...)`로 이미지를 만들어 `Button(win, image=img)`로 바꾸면 됩니다. 단, `PhotoImage` 객체들을 리스트나 전역 변수에 계속 보관해야 이미지가 사라지지 않습니다.
+
+---
+
+## ✅ 핵심 정리
+
+- GUI 프로그램의 뼈대: `Tk()` → 위젯 생성 → `pack()` 배치 → `mainloop()`
+- 버튼 동작은 `command=함수이름` (괄호 없이)
+- 체크/라디오버튼은 `IntVar()`와 `.get()`으로 상태를 읽습니다.
+- 화면 내용 변경은 `configure()`, 팝업은 `messagebox.showinfo()`
+- 함수 안에서 전역 변수를 바꾸려면 `global`
+
+## 📝 연습문제
+
+1. 숫자 입력 칸(`Entry`)과 "제곱 계산" 버튼을 만들어, 결과를 라벨에 표시해 보세요. (`entry.get()` 사용)
+2. 버튼을 누를 때마다 숫자가 1씩 올라가는 카운터를 만들어 보세요.
+3. 자판기 예제에 "환불" 버튼(보유 금액을 0으로)을 추가해 보세요.
+
+---
+
+**시리즈 목차**: 1.변수와 데이터 · 2.연산자 · 3.조건문 · 4.반복문 · 5.리스트 · 6.튜플/셋/딕셔너리 · 7.함수와 모듈 · **8.윈도우 프로그래밍** · 9.파일 입출력 · 10.객체지향

@@ -1,0 +1,265 @@
+# [파이썬 기초 5] 리스트 — 여러 값을 한 번에 관리하기
+
+> 파이썬 입문 가이드 시리즈 5/10
+> 리스트의 생성, 인덱싱, 슬라이싱, 메서드, 그리고 반복문과 함께 쓰는 활용법을 정리합니다.
+
+---
+
+## 1. 리스트란?
+
+**여러 개의 값을 순서대로 담는 자료구조**입니다. 대괄호 `[]`로 만들며, 서로 다른 자료형도 함께 담을 수 있습니다.
+
+```python
+a = [435, "안녕", 3.999, True, [123]]   # 리스트 안에 리스트도 가능
+empty1 = []
+empty2 = list()          # 빈 리스트 만들기
+c = [0, 0, 0, 0]
+```
+
+## 2. 인덱싱 (위치로 접근)
+
+위치(인덱스)는 **0부터** 시작합니다. 음수 인덱스는 뒤에서부터 셉니다.
+
+```python
+c = ["월", "화", "수", "목"]
+print(c[0])     # 월
+print(c[3])     # 목
+print(c[-1])    # 목  (맨 뒤)
+print(c[-2])    # 수
+
+c[0] = "MON"    # 값 수정
+print(c)        # ['MON', '화', '수', '목']
+```
+
+인덱스 범위를 벗어나면 `IndexError`가 발생합니다.
+
+## 3. 슬라이싱
+
+`리스트[시작:끝:간격]` — 끝 위치는 포함되지 않습니다.
+
+```python
+a = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+print(a[2:5])    # [3, 4, 5]
+print(a[:3])     # [1, 2, 3]
+print(a[5:])     # [6, 7, 8, 9]
+print(a[::2])    # [1, 3, 5, 7, 9]   (2칸씩)
+print(a[::-1])   # [9, 8, ..., 1]    (뒤집기)
+```
+
+## 4. 리스트 연산
+
+```python
+num = [1, 2, 3]
+a = [3, 3, 3]
+print(num + a)    # [1, 2, 3, 3, 3, 3]  이어붙이기
+print(a * 3)      # [3, 3, 3, 3, 3, 3, 3, 3, 3]  반복
+print(len(num))   # 3  길이
+print(2 in num)   # True
+```
+
+> 리스트끼리 곱하기(`*`)나 나누기(`/`)는 불가능합니다. 문자열과 비슷하다고 생각하면 편해요.
+
+## 5. 값 추가하기: 반복문과 함께
+
+```python
+b = []
+b.append("월")
+b.append("화")
+b.append("수")
+print(b)          # ['월', '화', '수']
+
+num = []
+for i in range(1, 11):
+    num.append(i)
+print(num)        # [1, 2, ..., 10]
+```
+
+## 6. 리스트 순회하기
+
+```python
+num = [1, 2, 3, 4, 5]
+
+# 방법 1: 값을 바로 꺼내기 (가장 간단)
+for n in num:
+    print(n)
+
+# 방법 2: 인덱스로 접근
+for i in range(len(num)):
+    print(i, num[i])
+
+# 방법 3: 인덱스와 값을 함께
+for i, n in enumerate(num):
+    print(i, n)
+```
+
+```python
+# 합계 구하기
+total = 0
+for i in range(len(num)):
+    total += num[i]
+print(total)
+# 또는 그냥 sum(num)
+```
+
+> ⚠️ `sum`, `max`, `min`, `list`, `len` 등은 파이썬 **내장 함수 이름**입니다. 변수 이름으로 쓰면 해당 함수를 쓸 수 없게 되니 `total`, `hap` 같은 이름을 사용하세요.
+
+## 7. 리스트 메서드 총정리
+
+| 메서드 | 설명 | 예시 |
+|---|---|---|
+| `append(x)` | 맨 뒤에 추가 | `a.append(5)` |
+| `insert(i, x)` | `i` 위치에 삽입 | `a.insert(0, "사과")` |
+| `extend(리스트)` | 뒤에 리스트를 이어붙임 | `a.extend([7, 8])` |
+| `remove(x)` | 값 `x`를 찾아 삭제 (첫 번째만) | `a.remove("망고")` |
+| `pop()` | 맨 뒤 항목 삭제 후 **반환** | `a.pop()` |
+| `pop(i)` | `i` 위치 항목 삭제 후 반환 | `a.pop(0)` |
+| `del a[i]` | 위치로 삭제 (`del a`는 변수 자체 삭제) | `del a[0]` |
+| `index(x)` | 값 `x`의 위치 반환 | `a.index(3)` |
+| `count(x)` | 값 `x`의 개수 | `a.count("사과")` |
+| `sort()` | 오름차순 정렬 (`reverse=True`면 내림차순) | `a.sort()` |
+| `reverse()` | 순서 뒤집기 | `a.reverse()` |
+| `clear()` | 모든 항목 삭제 | `a.clear()` |
+| `copy()` | 복사본 생성 | `b = a.copy()` |
+| `len(a)` | 길이 (내장 함수) | `len(a)` |
+
+### 과일 리스트 종합 예제
+
+```python
+fruit = ['딸기', '망고', '포도', '사과']
+fruit.append('수박')        # 맨 뒤에 수박 추가
+fruit.remove('망고')        # 망고 삭제
+fruit.insert(0, '사과')     # 첫 번째 위치에 사과 추가
+print(fruit.count('사과'))  # 2
+fruit.sort()                # 가나다순 (한글 ㄱㄴㄷ, 영어 abc, 숫자 0123 순)
+fruit.pop()                 # 마지막 항목 삭제
+print(fruit.index('딸기'))  # 딸기의 위치
+print(len(fruit))
+print(fruit)
+```
+
+## 8. 자주 하는 실수 ⚠️
+
+### ① `reverse()`, `sort()`의 반환값은 `None`
+
+이 메서드들은 **리스트 자체를 바꾸고** 아무것도 돌려주지 않습니다.
+
+```python
+c = [1, 2, 3, 4, 5]
+c.reverse()
+print(c)             # [5, 4, 3, 2, 1]
+print(c.reverse())   # None  ← 이렇게 쓰면 안 됨
+
+# 원본을 유지하고 새 리스트를 얻고 싶다면
+print(sorted(c))     # 정렬된 새 리스트
+print(c[::-1])       # 뒤집힌 새 리스트
+```
+
+### ② 빈 리스트에 `max()`, `min()`
+
+```python
+num = []
+# print(max(num))  # ValueError!
+if num == []:        # 또는 if not num:
+    print("아무 값도 입력되지 않았습니다.")
+else:
+    print(max(num), min(num))
+```
+
+### ③ `=`는 복사가 아니라 **같은 리스트를 가리키는 것**
+
+```python
+a = [1, 2, 3]
+b = a            # 같은 리스트를 공유!
+b.append(4)
+print(a)         # [1, 2, 3, 4]  ← a도 바뀜
+
+c = a.copy()     # 진짜 복사
+c.append(5)
+print(a)         # [1, 2, 3, 4]  ← 그대로
+```
+
+---
+
+## 🛠 활용 예제
+
+### ① 심사위원 평균 점수
+
+```python
+people = int(input("심사위원 수:"))
+point = []
+for i in range(people):
+    point.append(int(input("평가 점수 ==>")))
+
+print(f"심사위원 평균 점수: {sum(point) / people}")
+```
+
+### ② 홀수 / 짝수 분류 (0 입력 시 종료)
+
+```python
+odd = []
+even = []
+while True:
+    a = int(input("숫자를 입력해주세요 \n"))
+    if a == 0:
+        break
+    if a % 2 == 0:
+        even.append(a)
+    else:
+        odd.append(a)
+
+print(f"홀수:{odd}")
+print(f"짝수:{even}")
+```
+
+### ③ 최댓값 / 최솟값 (정수 범위 -999 ~ 999, 0 입력 시 종료)
+
+```python
+num = []
+while True:
+    a = int(input("숫자를 입력해주세요 \n"))
+    if a == 0:
+        break
+    elif a > 999 or a < -999:
+        print("세 자리 이하의 정수를 입력해주세요")
+    else:
+        num.append(a)
+
+if num == []:
+    print("아무 값도 입력되지 않았습니다.")
+else:
+    print(f"최댓값:{max(num)}, 최솟값:{min(num)}")
+```
+
+### ④ 마지막 세 개의 정수 출력 (-1 입력 시 종료)
+
+```python
+num = []
+for _ in range(100):
+    a = int(input("숫자를 입력해주세요 \n"))
+    if a == -1:
+        break
+    num.append(a)
+
+print("마지막으로 입력된 정수는 다음과 같습니다.")
+for n in num[-3:]:      # 슬라이싱 한 줄로 해결! 3개 미만이어도 OK
+    print(n)
+```
+
+---
+
+## ✅ 핵심 정리
+
+- 리스트는 `[]`로 만들고, 인덱스는 0부터 시작하며 음수 인덱스도 쓸 수 있습니다.
+- 슬라이싱 `a[시작:끝:간격]`으로 일부만 가져올 수 있습니다.
+- 추가: `append`, `insert`, `extend` / 삭제: `remove`, `pop`, `del` / 정렬: `sort`, `reverse`
+- `b = a`는 복사가 아니라 **같은 리스트 공유**입니다. 복사는 `a.copy()`.
+
+## 📝 연습문제
+
+1. 1~10 숫자가 든 리스트에서 짝수만 새 리스트에 담아 출력해 보세요.
+2. 점수 5개를 입력받아 평균과 평균 이상인 점수 개수를 구해 보세요.
+3. 입력받은 단어 리스트를 길이가 긴 순서대로 정렬해 보세요. (힌트: `sort(key=len)`)
+
+---
+
+**시리즈 목차**: 1.변수와 데이터 · 2.연산자 · 3.조건문 · 4.반복문 · **5.리스트** · 6.튜플/셋/딕셔너리 · 7.함수와 모듈 · 8.윈도우 프로그래밍 · 9.파일 입출력 · 10.객체지향

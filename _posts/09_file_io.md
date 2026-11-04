@@ -1,0 +1,301 @@
+# [파이썬 기초 9] 파일 입출력 — 파일 읽고 쓰기, 그리고 예외 처리
+
+> 파이썬 입문 가이드 시리즈 9/10
+> 프로그램이 종료돼도 데이터가 남도록 **파일에 저장**하고 **불러오는** 방법, 그리고 오류가 나도 프로그램이 멈추지 않게 하는 **예외 처리**를 정리합니다.
+
+---
+
+## 1. 파일 처리 3단계
+
+1. 파일 **열기** — `open()`
+2. 파일 **처리** — 읽기 / 쓰기
+3. 파일 **닫기** — `close()`
+
+```python
+f = open("test.txt", "r", encoding="utf-8")   # 1) 열기
+text = f.read()                                # 2) 처리
+f.close()                                      # 3) 닫기
+```
+
+## 2. 파일 모드
+
+| 모드 | 의미 | 비고 |
+|---|---|---|
+| `"r"` | 읽기 | 기본값. 파일이 없으면 `FileNotFoundError` |
+| `"w"` | 쓰기 | 파일이 없으면 생성, **있으면 내용을 모두 지우고 덮어씀** ⚠️ |
+| `"a"` | 이어쓰기 | 기존 내용 뒤에 추가 |
+| `"r+"` | 읽기 + 쓰기 | |
+| `"t"` | 텍스트 모드 | 기본값 |
+| `"b"` | 이진(바이너리) 모드 | `"rb"`, `"wb"` |
+
+> 💡 한글이 포함된 텍스트 파일은 `encoding="utf-8"`을 지정하는 습관을 들이세요. 환경에 따라 글자가 깨질 수 있습니다. (윈도우 메모장의 기본 저장 방식에 따라 `cp949`가 필요한 경우도 있습니다.)
+
+## 3. 파일 읽기
+
+`test1.txt`의 내용이 아래와 같다고 가정합니다.
+
+```
+첫번째 줄
+두번째 줄
+세번째 줄
+```
+
+### `read()` — 전체를 하나의 문자열로
+
+```python
+f = open("test1.txt", "r", encoding="utf-8")
+print(f.read())
+f.close()
+```
+
+### `readline()` — 한 줄씩
+
+```python
+f = open("test1.txt", "r", encoding="utf-8")
+print(f.readline(), end="")   # 첫째 줄
+print(f.readline(), end="")   # 둘째 줄
+f.close()
+```
+
+`print(..., end="")`를 쓰는 이유: 읽어온 줄 끝에 이미 `\n`(줄바꿈)이 포함되어 있어서, 그냥 `print`하면 줄바꿈이 두 번 일어납니다.
+
+### 끝까지 한 줄씩 반복
+
+```python
+f = open("test1.txt", "r", encoding="utf-8")
+while True:
+    line = f.readline()
+    if line == "":        # 더 읽을 내용이 없으면 빈 문자열
+        break
+    print(line, end="")
+f.close()
+```
+
+### `readlines()` — 전체를 리스트로
+
+```python
+f = open("test1.txt", "r", encoding="utf-8")
+lines = f.readlines()
+print(lines)      # ['첫번째 줄\n', '두번째 줄\n', '세번째 줄']
+
+for line in lines:
+    print(line, end="")
+f.close()
+```
+
+> `readlines()`는 파일 전체를 메모리에 올리므로 **아주 큰 파일(수백 MB 이상)에는 부적합**합니다. 이럴 땐 `for line in f:` 로 한 줄씩 처리하세요.
+
+```python
+with open("test1.txt", "r", encoding="utf-8") as f:
+    for line in f:             # 메모리를 아끼는 방법
+        print(line, end="")
+```
+
+## 3. 파일 쓰기
+
+### `write()`
+
+```python
+outFile = open("test1.txt", "w", encoding="utf-8")
+while True:
+    inStr = input("문자열 입력: ")
+    if inStr == "":
+        break
+    outFile.write(inStr + "\n")    # write는 줄바꿈을 자동으로 넣어주지 않음
+outFile.close()
+```
+
+- `write("문자열")` — 문자열 하나를 씁니다. 텍스트/바이너리 모두 사용 가능.
+- `writelines(리스트)` — 문자열 리스트를 한꺼번에 씁니다. (이것도 줄바꿈은 직접 넣어야 함)
+
+```python
+lines = ["사과\n", "딸기\n", "포도\n"]
+with open("fruit.txt", "w", encoding="utf-8") as f:
+    f.writelines(lines)
+```
+
+## 4. `with` 문 — 자동으로 닫아주는 안전한 방법
+
+`close()`를 깜빡해도, 중간에 오류가 나도 **블록이 끝나면 자동으로 파일을 닫아줍니다.** 실무에서는 거의 항상 `with`를 씁니다.
+
+```python
+with open("test1.txt", "w", encoding="utf-8") as outFile:
+    while True:
+        inStr = input("문자열 입력: ")
+        if inStr == "":
+            break
+        outFile.write(inStr + "\n")
+# 블록을 벗어나면 outFile은 자동으로 close 됨
+```
+
+> 💡 Windows 경로를 쓸 때는 `"C:\\Users\\me\\test.txt"`처럼 역슬래시를 두 번 쓰거나, `r"C:\Users\me\test.txt"`, `"C:/Users/me/test.txt"` 형태로 씁니다.
+
+## 5. 이진(바이너리) 파일
+
+텍스트가 아닌 **그림, 음악, 동영상, 실행 파일(EXE)** 등은 `"rb"`, `"wb"` 모드로 다룹니다.
+
+```python
+# 파일 복사의 원리 (바이너리 읽어서 그대로 쓰기)
+with open("원본.png", "rb") as src, open("복사본.png", "wb") as dst:
+    dst.write(src.read())
+```
+
+---
+
+## 6. 파일/폴더 다루기: `os`, `shutil`
+
+```python
+import os
+import shutil
+```
+
+| 함수 | 설명 |
+|---|---|
+| `os.path.exists(경로)` | 파일 또는 폴더가 존재하는가 (`True`/`False`) |
+| `os.path.isfile(경로)` | 파일인가 |
+| `os.path.isdir(경로)` | 폴더인가 |
+| `os.path.getsize(경로)` | 파일 크기 (바이트) |
+| `os.mkdir(폴더)` | 폴더 생성 (**상위 폴더가 미리 있어야 함**) |
+| `os.makedirs(폴더)` | 상위 폴더까지 한꺼번에 생성 |
+| `os.remove(파일)` | 파일 삭제 |
+| `os.walk(폴더)` | 폴더 안의 모든 파일/하위 폴더 탐색 |
+| `shutil.copy(원본, 대상)` | 파일 복사 |
+| `shutil.rmtree(폴더)` | 폴더와 **그 안의 모든 내용** 삭제 ⚠️ |
+
+### 파일이 있는지 확인하고 읽기
+
+```python
+import os
+
+filename = input("파일경로입력:")
+if os.path.exists(filename):
+    with open(filename, "r", encoding="utf-8") as f:
+        for line in f:
+            print(line, end="")
+else:
+    print(f"해당되는 {filename}파일이 없습니다.")
+```
+
+### 폴더 만들고 지우기
+
+```python
+os.mkdir("C:/myDir")          # 먼저 상위 폴더
+os.mkdir("C:/myDir/dir1")     # 그다음 하위 폴더
+shutil.rmtree("C:/myDir/")    # 하위 폴더까지 전부 삭제 — 매우 주의!
+```
+
+`os.mkdir("C:/myDir/dir1")`을 `C:/myDir` 없이 먼저 실행하면 오류가 납니다.
+
+---
+
+## 7. 예외 처리 (try / except)
+
+오류(예외)가 발생하면 파이썬은 원래 프로그램을 멈춥니다. **예외 처리**를 하면 오류가 나도 **개발자가 정한 방식으로 대응**할 수 있습니다.
+
+```python
+try:
+    # 오류가 발생할 가능성이 있는 코드
+    os.remove("없는파일.txt")
+except:
+    # 오류가 발생했을 때 실행할 코드
+    print("파일이 없네요. 확인바랍니다")
+```
+
+### 전체 구조
+
+```python
+try:
+    실행할 코드
+except 예외종류1:
+    예외1이 발생했을 때
+except 예외종류2:
+    예외2가 발생했을 때
+else:
+    예외가 발생하지 않았을 때 실행
+finally:
+    예외 발생 여부와 상관없이 항상 마지막에 실행
+```
+
+### 자주 만나는 예외 종류
+
+| 예외 | 발생 상황 |
+|---|---|
+| `FileNotFoundError` | 없는 파일을 열려고 할 때 |
+| `ZeroDivisionError` | 0으로 나눌 때 |
+| `ValueError` | `int("abc")`처럼 값이 부적절할 때 |
+| `IndexError` | 리스트 범위를 벗어난 인덱스 |
+| `KeyError` | 딕셔너리에 없는 키 |
+| `TypeError` | 자료형이 맞지 않는 연산 |
+| `Exception` | 거의 모든 예외를 포함하는 최상위 종류 |
+
+> 💡 모든 예외를 외울 필요는 없습니다. 어떤 오류인지 모르겠다면 `except Exception as e:` 로 받아서 `print(e)`로 내용을 확인하세요. (그냥 `except:`는 `Ctrl+C` 같은 종료 신호까지 잡아버리기 때문에 `except Exception:`이 더 안전합니다.)
+
+### 실전 예제 ① 숫자 입력 검사
+
+```python
+while True:
+    try:
+        num = int(input("정수를 입력하세요: "))
+    except ValueError:
+        print("숫자만 입력해주세요!")
+    else:
+        print(f"입력한 수의 2배: {num * 2}")
+        break
+```
+
+### 실전 예제 ② 안전하게 파일 읽기
+
+```python
+try:
+    with open("data.txt", "r", encoding="utf-8") as f:
+        print(f.read())
+except FileNotFoundError:
+    print("파일이 없습니다.")
+except Exception as e:
+    print("알 수 없는 오류:", e)
+finally:
+    print("파일 처리 종료")
+```
+
+### 실전 예제 ③ 예외를 이용해 반복 종료하기 — 문자열 위치 모두 찾기
+
+`str.index()`는 찾는 문자열이 더 이상 없으면 `ValueError`를 발생시킵니다. 이를 이용하면 "끝까지 다 찾았다"를 감지할 수 있습니다.
+
+```python
+myStr = "파이썬재미파이썬"
+strPosList = []
+index = 0
+
+while True:
+    try:
+        index = myStr.index('파이썬', index)   # index 위치부터 검색
+        strPosList.append(index)
+        index = index + 1                      # 다음 위치부터 다시 검색
+    except ValueError:                         # 더 이상 없으면 오류 → 반복 종료
+        break
+
+print("파이썬 글자 위치:", strPosList)   # [0, 5]
+```
+
+> 만약 `try`/`except` 없이 `while True`로만 돌리면, 마지막에 오류가 나서 프로그램이 멈춥니다. (참고로 `str.find()`는 못 찾으면 오류 대신 `-1`을 돌려주므로 더 간단히 쓸 수도 있습니다.)
+
+---
+
+## ✅ 핵심 정리
+
+- 파일은 **열기 → 처리 → 닫기**. `with open(...) as f:`를 쓰면 닫기를 자동으로 해줍니다.
+- `"w"`는 **기존 내용을 지우고** 덮어쓰기, 이어쓰려면 `"a"`.
+- 한글 파일은 `encoding="utf-8"` 지정 습관을 들이세요.
+- `os.path.exists()`로 존재 여부를 먼저 확인하거나, `try/except`로 오류에 대비합니다.
+- `finally`는 오류가 나든 안 나든 항상 실행됩니다.
+- `rmtree`, `remove`는 되돌릴 수 없으니 신중하게!
+
+## 📝 연습문제
+
+1. 사용자에게 입력받은 한 줄을 `memo.txt`에 **이어서** 저장하는 프로그램을 만들어 보세요. (`"a"` 모드)
+2. `memo.txt`의 줄 수와 전체 글자 수를 출력해 보세요.
+3. 두 수를 입력받아 나누기를 하되, 0으로 나누거나 문자를 입력해도 프로그램이 멈추지 않도록 예외 처리를 해보세요.
+
+---
+
+**시리즈 목차**: 1.변수와 데이터 · 2.연산자 · 3.조건문 · 4.반복문 · 5.리스트 · 6.튜플/셋/딕셔너리 · 7.함수와 모듈 · 8.윈도우 프로그래밍 · **9.파일 입출력** · 10.객체지향
