@@ -1,6 +1,6 @@
 ---
 layout: page
-title: personal project
+title: project
 permalink: /archive/project.html
 ---
 
